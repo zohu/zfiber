@@ -18,6 +18,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/panjf2000/ants/v2 v2.11.0
 	github.com/shopspring/decimal v1.4.0
+	github.com/twpayne/go-geom v1.6.0
 	github.com/valkey-io/valkey-go v1.0.53
 	golang.org/x/crypto v0.32.0
 	gorm.io/driver/postgres v1.5.11
