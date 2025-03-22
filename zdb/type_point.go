@@ -3,7 +3,6 @@ package zdb
 import (
 	"database/sql/driver"
 	"fmt"
-	"strings"
 )
 
 type Point struct {
@@ -22,16 +21,11 @@ func (p *Point) Scan(value interface{}) error {
 	if value == nil {
 		return nil
 	}
-	bytes, ok := value.([]byte)
+	str, ok := value.(string)
 	if !ok {
 		return fmt.Errorf("unsupported type for Point: %T", value)
 	}
-	str := string(bytes)
-	str = strings.TrimPrefix(str, "SRID=4326;")
-	str = strings.TrimPrefix(str, "POINT(")
-	str = strings.TrimSuffix(str, ")")
-
-	_, err := fmt.Sscanf(str, "%f %f", &p.X, &p.Y)
+	_, err := fmt.Sscanf(str, "SRID=4326;POINT(%f %f)", &p.X, &p.Y)
 	return err
 }
 func (p Point) Value() (driver.Value, error) {
