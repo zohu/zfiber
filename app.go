@@ -146,7 +146,7 @@ func (s *App) Listen(config ...fiber.ListenConfig) {
 	zlog.Infof("serve shutdowned")
 }
 func errorHandler(c fiber.Ctx, err error) error {
-	zlog.Warnf("%s %s: %v", requestid.FromContext(c), c.Path(), err)
+	zlog.Warnf("%s %s %s: %v", requestid.FromContext(c), c.Method(), c.Path(), err)
 
 	code := fiber.StatusInternalServerError
 	var e *fiber.Error

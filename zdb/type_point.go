@@ -27,6 +27,7 @@ func (p *Point) Scan(value interface{}) error {
 		return fmt.Errorf("unsupported type for Point: %T", value)
 	}
 	str := string(bytes)
+	str = strings.TrimPrefix(str, "SRID=4326;")
 	str = strings.TrimPrefix(str, "POINT(")
 	str = strings.TrimSuffix(str, ")")
 
@@ -34,5 +35,5 @@ func (p *Point) Scan(value interface{}) error {
 	return err
 }
 func (p Point) Value() (driver.Value, error) {
-	return fmt.Sprintf("POINT(%f %f)", p.X, p.Y), nil
+	return fmt.Sprintf("SRID=4326;POINT(%f %f)", p.X, p.Y), nil
 }
