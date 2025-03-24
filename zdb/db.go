@@ -24,6 +24,15 @@ func New(c *Config, dst ...any) {
 		zlog.Fatalf("init db failed")
 		return
 	}
+	// 初始化扩展
+	for _, ext := range conf.Extension {
+		if err := db.Raw("CREATE EXTENSION IF NOT EXISTS ?", ext).Error; err != nil {
+			zlog.Fatalf("create extension [%s] failed: %v", ext, err)
+			return
+		}
+		zlog.Infof("create extension [%s] success", ext)
+	}
+	// 初始化库表
 	if dst != nil && len(dst) > 0 {
 		if err := db.AutoMigrate(dst...); err != nil {
 			zlog.Fatalf("init db table failed: %v", err)

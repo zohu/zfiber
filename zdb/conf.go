@@ -21,6 +21,7 @@ type Config struct {
 	LogSkipCaller           string        `json:"log_skip_caller" yaml:"log_skip_caller" note:"堆栈跳过层数,yes/no"`
 	LogIgnoreRecordNotFound string        `json:"log_ignore_record_not_found" yaml:"log_ignore_record_not_found" note:"忽略无记录错误,yes/no"`
 	Debug                   bool          `json:"debug" yaml:"debug" note:"是否开启debug日志"`
+	Extension               []string      `json:"extension" yaml:"extension" note:"扩展配置"`
 }
 
 func (c *Config) Validate() error {
