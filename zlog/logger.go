@@ -1,6 +1,9 @@
 package zlog
 
-import "log/slog"
+import (
+	"fmt"
+	"log/slog"
+)
 
 type Logger struct {
 	*slog.Logger
@@ -29,4 +32,8 @@ func (l *Logger) Fatalf(format string, args ...any) {
 }
 func (l *Logger) Panicf(format string, args ...any) {
 	Panicf(format, args...)
+}
+
+func (l *Logger) Error(err error, msg string, keysAndValues ...interface{}) {
+	Error(fmt.Sprintf("%s %v", msg, err), keysAndValues)
 }
