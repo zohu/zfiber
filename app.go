@@ -181,8 +181,12 @@ func loggerConfig(conf *Middleware) logger.Config {
 				if len(b) > 0 && b[0] == 123 && b[len(b)-1] == 125 {
 					dst := zutil.NewByteBuff()
 					defer zutil.ReleaseByteBuff(dst)
-					_ = json.Compact(dst, c.Body())
-					return output.Write(dst.Bytes())
+					_ = json.Compact(dst, b)
+					b = dst.Bytes()
+				}
+				if len(b) > 2048 {
+					_, _ = output.Write(b[:2048])
+					return output.Write([]byte("..."))
 				}
 				return output.Write(b)
 			},
