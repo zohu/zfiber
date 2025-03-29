@@ -22,7 +22,7 @@ var multiPool *ants.MultiPool
 func New(conf *Config) {
 	size := zutil.FirstTruth(int(conf.MultiSize), 1)
 	preSize := zutil.FirstTruth(int(conf.PoolSize), 10)
-	p, err := ants.NewMultiPool(size, preSize, ants.LeastTasks, ants.WithLogger(zlog.ZLogger()))
+	p, err := ants.NewMultiPool(size, preSize, ants.LeastTasks, ants.WithLogger(zlog.NewZLogger(nil)))
 	if err != nil {
 		zlog.Fatalf("new multi pool error: %v", err)
 	}

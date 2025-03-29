@@ -3,31 +3,27 @@ package zlog
 import (
 	"bufio"
 	"io"
-	"log/slog"
-	"os"
 	"runtime"
 	"strings"
 )
 
 // SafeWriter
-// @Description: 获取一个io.Writer，方便集成
+// @Description: 可能会有超长日志的情况下使用，只支持info
 // @return *io.PipeWriter
-func SafeWriter() *io.PipeWriter {
+func SafeWriter(ops *Options, w ...io.Writer) *io.PipeWriter {
 	reader, writer := io.Pipe()
-	go scan(reader)
+	go scan(NewZLogger(ops, w...), reader)
 	runtime.SetFinalizer(writer, writerFinalizer)
 	return writer
 }
 
-var safeLogger = slog.New(NewHandler(os.Stdout, nil))
-
-func scan(reader *io.PipeReader) {
+func scan(logger *Logger, reader *io.PipeReader) {
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(scanLinesOrGiveLong)
 	for scanner.Scan() {
 		text := scanner.Text()
 		if strings.TrimSpace(text) != "" {
-			safeLogger.Info(text)
+			logger.Info(text)
 		}
 	}
 	_ = reader.Close()

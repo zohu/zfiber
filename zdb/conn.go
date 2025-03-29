@@ -23,8 +23,8 @@ func newDB(config Config, database string) (*gorm.DB, error) {
 			},
 			Logger: NewGormLogger(&GormLoggerOption{
 				LogSlow:                 time.Second * time.Duration(config.LogSlow),
-				LogSkipCaller:           config.LogSkipCaller == "yes",
 				LogIgnoreRecordNotFound: config.LogIgnoreRecordNotFound == "yes",
+				Debug:                   config.Debug,
 			}),
 		})
 	if err != nil {

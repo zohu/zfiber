@@ -18,7 +18,6 @@ type Config struct {
 	MaxAlive                int           `json:"max_alive" yaml:"max_alive" note:"最大存活连接数"`
 	MaxAliveLife            time.Duration `json:"max_alive_life" yaml:"max_alive_life" note:"最大存活时间"`
 	LogSlow                 int           `json:"log_slow" yaml:"log_slow" note:"慢阈值，秒"`
-	LogSkipCaller           string        `json:"log_skip_caller" yaml:"log_skip_caller" note:"堆栈跳过层数,yes/no"`
 	LogIgnoreRecordNotFound string        `json:"log_ignore_record_not_found" yaml:"log_ignore_record_not_found" note:"忽略无记录错误,yes/no"`
 	Debug                   bool          `json:"debug" yaml:"debug" note:"是否开启debug日志"`
 	Extension               []string      `json:"extension" yaml:"extension" note:"扩展配置"`
@@ -30,7 +29,6 @@ func (c *Config) Validate() error {
 	c.MaxAlive = zutil.FirstTruth(c.MaxAlive, 100)
 	c.MaxAliveLife = zutil.FirstTruth(c.MaxAliveLife, time.Hour)
 	c.LogSlow = zutil.FirstTruth(c.LogSlow, 5)
-	c.LogSkipCaller = zutil.FirstTruth(c.LogSkipCaller, "yes")
 	c.LogIgnoreRecordNotFound = zutil.FirstTruth(c.LogIgnoreRecordNotFound, "yes")
 	return validator.New().Struct(c)
 }

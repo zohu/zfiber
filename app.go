@@ -40,7 +40,8 @@ type Config struct {
 	Middleware *Middleware `json:"middleware,omitempty" yaml:"middleware,omitempty"`
 }
 type Middleware struct {
-	LoggerIgnore []string `json:"logger_ignore,omitempty" yaml:"logger_ignore,omitempty"`
+	LoggerIgnore     []string `json:"logger_ignore,omitempty" yaml:"logger_ignore,omitempty"`
+	LoggerSkipCaller int      `json:"logger_skip_caller" yaml:"logger_skip_caller"`
 }
 
 type App struct {
@@ -174,7 +175,7 @@ func loggerConfig(conf *Middleware) logger.Config {
 	}
 	return logger.Config{
 		Format: LoggerFormat,
-		Output: zlog.SafeWriter(),
+		Output: zlog.SafeWriter(nil),
 		CustomTags: map[string]logger.LogFunc{
 			logger.TagBody: func(output logger.Buffer, c fiber.Ctx, data *logger.Data, extraParam string) (int, error) {
 				b := c.Body()

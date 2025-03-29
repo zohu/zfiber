@@ -7,6 +7,7 @@ import (
 	"github.com/zohu/zfiber/zutil"
 	"io"
 	"log/slog"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -39,9 +40,12 @@ type Options struct {
 	NoColor     bool
 }
 
-func NewHandler(w io.Writer, opts *Options) slog.Handler {
+func NewHandler(opts *Options, w ...io.Writer) slog.Handler {
+	if len(w) == 0 {
+		w = []io.Writer{os.Stdout}
+	}
 	h := &handler{
-		w:          w,
+		w:          w[0],
 		level:      defaultLevel,
 		timeFormat: defaultTimeFormat,
 	}
@@ -49,7 +53,7 @@ func NewHandler(w io.Writer, opts *Options) slog.Handler {
 		return h
 	}
 
-	h.addSource = opts.AddSource
+	h.addSource = opts.AddSource || opts.SkipCallers > 0
 	h.skipCallers = opts.SkipCallers
 	if opts.Level != nil {
 		h.level = opts.Level
@@ -135,7 +139,7 @@ func (h *handler) Handle(_ context.Context, r slog.Record) error {
 	// source
 	if h.addSource {
 		pcs := make([]uintptr, 16)
-		n := runtime.Callers(5+h.skipCallers, pcs)
+		n := runtime.Callers(6+h.skipCallers, pcs)
 		fs := runtime.CallersFrames(pcs[:n])
 		f, _ := fs.Next()
 		if f.File != "" {
