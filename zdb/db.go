@@ -2,6 +2,7 @@ package zdb
 
 import (
 	"context"
+	"fmt"
 	"github.com/zohu/zfiber/zlog"
 	"github.com/zohu/zfiber/zutil"
 	"gorm.io/gorm"
@@ -26,7 +27,7 @@ func New(c *Config, dst ...any) {
 	}
 	// 初始化扩展
 	for _, ext := range conf.Extension {
-		if err := db.Exec("CREATE EXTENSION IF NOT EXISTS ?", ext).Error; err != nil {
+		if err := db.Exec(fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS %s;", ext)).Error; err != nil {
 			zlog.Fatalf("create extension [%s] failed: %v", ext, err)
 			return
 		}
