@@ -40,8 +40,9 @@ type Config struct {
 	Middleware *Middleware `json:"middleware,omitempty" yaml:"middleware,omitempty"`
 }
 type Middleware struct {
-	LoggerIgnore     []string `json:"logger_ignore,omitempty" yaml:"logger_ignore,omitempty"`
-	LoggerSkipCaller int      `json:"logger_skip_caller" yaml:"logger_skip_caller"`
+	LoggerIgnore  []string `json:"logger_ignore,omitempty" yaml:"logger_ignore,omitempty"`
+	LoggerBodyMax int      `json:"logger_body_max,omitempty" yaml:"logger_body_max,omitempty"`
+	LoggerRespMax int      `json:"logger_resp_max,omitempty" yaml:"logger_resp_max,omitempty"`
 }
 
 type App struct {
@@ -173,6 +174,8 @@ func loggerConfig(conf *Middleware) logger.Config {
 	if conf == nil {
 		conf = new(Middleware)
 	}
+	conf.LoggerBodyMax = zutil.FirstTruth(conf.LoggerBodyMax, 1024)
+	conf.LoggerRespMax = zutil.FirstTruth(conf.LoggerRespMax, 1024)
 	return logger.Config{
 		Format: LoggerFormat,
 		Output: zlog.SafeWriter(nil),
@@ -185,8 +188,22 @@ func loggerConfig(conf *Middleware) logger.Config {
 					_ = json.Compact(dst, b)
 					b = dst.Bytes()
 				}
-				if len(b) > 2048 {
-					_, _ = output.Write(b[:2048])
+				if len(b) > conf.LoggerBodyMax {
+					_, _ = output.Write(b[:conf.LoggerBodyMax])
+					return output.Write([]byte("..."))
+				}
+				return output.Write(b)
+			},
+			logger.TagResBody: func(output logger.Buffer, c fiber.Ctx, data *logger.Data, extraParam string) (int, error) {
+				b := c.Response().Body()
+				if len(b) > 0 && b[0] == 123 && b[len(b)-1] == 125 {
+					dst := zutil.NewByteBuff()
+					defer zutil.ReleaseByteBuff(dst)
+					_ = json.Compact(dst, b)
+					b = dst.Bytes()
+				}
+				if len(b) > conf.LoggerRespMax {
+					_, _ = output.Write(b[:conf.LoggerRespMax])
 					return output.Write([]byte("..."))
 				}
 				return output.Write(b)
