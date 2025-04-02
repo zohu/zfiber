@@ -26,7 +26,7 @@ func New(c *Config, dst ...any) {
 	}
 	// 初始化扩展
 	for _, ext := range conf.Extension {
-		if err := db.Raw("CREATE EXTENSION IF NOT EXISTS ?", ext).Error; err != nil {
+		if err := db.Exec("CREATE EXTENSION IF NOT EXISTS ?", ext).Error; err != nil {
 			zlog.Fatalf("create extension [%s] failed: %v", ext, err)
 			return
 		}
